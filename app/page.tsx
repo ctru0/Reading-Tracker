@@ -2,64 +2,22 @@ import { FC } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
-import CourseCard from "@/components/CourseCard";
 
-interface Course {
-  id: number;
-  title: string;
-  description: string;
-  estimatedTime: string;
+export default async function Home() {
+	return (
+		<main>
+			<Header />
+			<div className='absolute top-1/2 left-1/2 -translate-1/2 text-gray-800 flex items-center justify-center w-full flex-col gap-2'>
+			<img src="/worm.jpg" className='w-50 h-50'></img>
+				<h1 className='text-5xl font-bold'>Reading Tracker</h1>
+				<p className='mt-4 text-lg'>Log the books you've read, share your ratings and thoughts</p>
+				<p className='text-lg'>Add a new book listing, edit books, and delete</p>
+				<Link href="books" className='mt-4'>
+					<Button className="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-3xl px-5 py-7 text-center me-2 mb-2" >
+					Open Reading Tracker
+					</Button>
+				</Link>
+			</div>
+		</main>
+	);
 }
-
-// This is a Server Component that fetches data
-async function getCourses(): Promise<Course[]> {
-  try {
-    // Use relative URL for API routes in the same Next.js app
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
-    const res = await fetch(`${baseUrl}/api/courses`, {
-      cache: "no-store", // Disable caching for this request
-    });
-    
-    if (!res.ok) {
-      console.error('API response error:', await res.text());
-      throw new Error(`Failed to fetch courses: ${res.status}`);
-    }
-    
-    return res.json();
-  } catch (error) {
-    console.error('Error fetching courses:', error);
-    return []; // Return empty array on error to prevent UI from breaking
-  }
-}
-
-const Home: FC = async () => {
-  const courses = await getCourses();
-  
-  return (
-    <div>
-      <Header />
-      <main className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-center">Available Courses</h1>
-          <Link href="/courses/add">
-            <Button className="bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800">
-              Add New Course
-            </Button>
-          </Link>
-        </div>
-        
-        {courses.length === 0 ? (
-          <p className="text-center text-gray-500">No courses available at the moment.</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses.map((course) => (
-              <CourseCard key={course.id} course={course} />
-            ))}
-          </div>
-        )}
-      </main>
-    </div>
-  );
-};
-
-export default Home;

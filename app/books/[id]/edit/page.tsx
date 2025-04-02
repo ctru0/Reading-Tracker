@@ -5,64 +5,65 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
-import { Course } from "@/types/course";
+import { Book } from "@/types/book";
 
-interface EditCoursePageProps {
+interface EditBookPageProps {
   params: {
     id: string;
   };
 }
 
-export default function EditCoursePage({ params }: EditCoursePageProps) {
+export default function EditBookPage({ params }: EditBookPageProps) {
   const router = useRouter();
   // Note: On client components, we don't need to await params since they're already resolved
-  const courseId = parseInt(params.id, 10);
+  const bookId = parseInt(params.id, 10);
   
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState<Partial<Course>>({
+  const [formData, setFormData] = useState<Partial<Book>>({
     title: "",
-    description: "",
-    estimatedTime: ""
+    author: "",
+    rating: "",
+    comments: ""
   });
 
-  // Fetch the course data
+  // Fetch the book data
   useEffect(() => {
-    const fetchCourse = async () => {
+    const fetchBook = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/courses/${courseId}`);
+        const response = await fetch(`/api/books/${bookId}`);
         
         if (!response.ok) {
-          throw new Error("Failed to fetch course");
+          throw new Error("Failed to fetch book");
         }
         
-        const course: Course = await response.json();
+        const book: Book = await response.json();
         
-        // Extract hours from estimatedTime (e.g., "10 hours" -> "10")
-        let hours = course.estimatedTime;
-        if (hours && hours.includes(" hours")) {
-          hours = hours.replace(" hours", "");
+        // Extract /10 from rating
+        let total = book.rating;
+        if (total && total.includes("/10 ⭐")) {
+          total = total.replace("/10 ⭐", "");
         }
         
         setFormData({
-          ...course,
-          estimatedTime: hours
+          ...book,
+          rating: total
         });
         setError(null);
       } catch (err) {
-        console.error("Error fetching course:", err);
-        setError("Failed to load course. Please try again.");
+        console.error("Error fetching book:", err);
+        setError("Failed to load book. Please try again.");
       } finally {
         setLoading(false);
       }
     };
     
-    if (courseId) {
-      fetchCourse();
+    if (bookId) {
+      fetchBook();
     }
-  }, [courseId]);
+  }, [bookId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -74,14 +75,14 @@ export default function EditCoursePage({ params }: EditCoursePageProps) {
     setSaving(true);
 
     try {
-      // Format the estimatedTime to include "hours"
+      // Format the rating to include total rating 
       const dataToSubmit = {
         ...formData,
-        id: courseId,
-        estimatedTime: formData.estimatedTime ? `${formData.estimatedTime} hours` : ""
+        id: bookId,
+        rating: formData.rating ? `${formData.rating}/10 ⭐` : undefined
       };
 
-      const response = await fetch(`/api/courses/${courseId}`, {
+      const response = await fetch(`/api/books/${bookId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -90,15 +91,15 @@ export default function EditCoursePage({ params }: EditCoursePageProps) {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to update course");
+        throw new Error("Failed to update book listing");
       }
 
-      // Redirect to course details page after successful update
-      router.push(`/courses/${courseId}`);
+      // Redirect to book details page after successful update
+      router.push(`/books/${bookId}`);
       router.refresh(); // Refresh the page data
     } catch (error) {
-      console.error("Error updating course:", error);
-      setError("Failed to update course. Please try again.");
+      console.error("Error updating listing:", error);
+      setError("Failed to update listing. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -110,7 +111,7 @@ export default function EditCoursePage({ params }: EditCoursePageProps) {
         <Header />
         <main className="container mx-auto px-4 py-8">
           <div className="max-w-2xl mx-auto text-center">
-            <p>Loading course information...</p>
+            <p>Loading book listing information...</p>
           </div>
         </main>
       </div>
@@ -118,13 +119,13 @@ export default function EditCoursePage({ params }: EditCoursePageProps) {
   }
 
   return (
-    <div>
+    <div className="bg-stone-300">
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">Edit Course</h1>
-            <Link href={`/courses/${courseId}`}>
+            <h1 className="text-2xl font-bold">Edit Book</h1>
+            <Link href={`/books/${bookId}`}>
               <Button variant="outline">Cancel</Button>
             </Link>
           </div>
@@ -138,7 +139,7 @@ export default function EditCoursePage({ params }: EditCoursePageProps) {
           <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow">
             <div className="space-y-2">
               <label htmlFor="title" className="block font-medium">
-                Course Title <span className="text-red-500">*</span>
+                Book Title <span className="text-red-500">*</span>
               </label>
               <input
                 id="title"
@@ -148,45 +149,61 @@ export default function EditCoursePage({ params }: EditCoursePageProps) {
                 value={formData.title || ""}
                 onChange={handleChange}
                 className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter course title"
+                placeholder="enter title here"
               />
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="description" className="block font-medium">
-                Description <span className="text-red-500">*</span>
+              <label htmlFor="author" className="block font-medium">
+                Author <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="author"
+                name="author"
+                type="text"
+                required
+                value={formData.author || ""}
+                onChange={handleChange}
+                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="enter author name here"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="rating" className="block font-medium">
+                Rating (from 1-10)
+              </label>
+              <input
+                id="rating"
+                name="rating"
+                type="number"
+                value={formData.rating || ""}
+                onChange={handleChange}
+                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="enter a rating number from 1 - 10"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="comments" className="block font-medium">
+                Comments <span className="text-red-500">*</span>
               </label>
               <textarea
-                id="description"
-                name="description"
+                id="comments"
+                name="comments"
                 required
-                value={formData.description || ""}
+                value={formData.comments || ""}
                 onChange={handleChange}
                 rows={4}
                 className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter course description"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="estimatedTime" className="block font-medium">
-                Estimated Time (hours)
-              </label>
-              <input
-                id="estimatedTime"
-                name="estimatedTime"
-                type="number"
-                value={formData.estimatedTime || ""}
-                onChange={handleChange}
-                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter number of hours"
+                placeholder="your thoughts and comments on the book"
               />
             </div>
 
             <div className="pt-4">
               <Button 
                 type="submit" 
-                className="w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
+                className="focus:outline-none text-white bg-stone-500 hover:bg-stone-600 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
                 disabled={saving}
               >
                 {saving ? "Saving Changes..." : "Save Changes"}

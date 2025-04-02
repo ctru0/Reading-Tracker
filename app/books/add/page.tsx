@@ -6,13 +6,14 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 
-export default function AddCoursePage() {
+export default function AddBookPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
-    description: "",
-    estimatedTime: ""
+    author: "",
+    rating: "",
+    comments: ""
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -25,14 +26,14 @@ export default function AddCoursePage() {
     setLoading(true);
 
     try {
-      // Format the estimatedTime to include "hours"
+      // Format the rating to include total rating 
       const dataToSubmit = {
         ...formData,
-        estimatedTime: formData.estimatedTime ? `${formData.estimatedTime} hours` : undefined
+        rating: formData.rating ? `${formData.rating}/10 ⭐` : undefined
       };
 
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
-      const response = await fetch(`${baseUrl}/api/courses`, {
+      const response = await fetch(`${baseUrl}/api/books`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,36 +42,36 @@ export default function AddCoursePage() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to add course");
+        throw new Error("Failed to add book");
       }
 
-      // Redirect to home page after successful creation
-      router.push("/");
+      // Redirect to books page after successful creation
+      router.push("/books");
       router.refresh(); // Refresh the page data
     } catch (error) {
-      console.error("Error adding course:", error);
-      alert("Failed to add course. Please try again.");
+      console.error("Error adding book:", error);
+      alert("Failed to add book listing. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div>
+    <div className="bg-stone-300">
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">Add New Course</h1>
-            <Link href="/">
-              <Button variant="outline">Back to Courses</Button>
+            <h1 className="text-2xl font-bold">Add New Book</h1>
+            <Link href="/books">
+              <Button variant="outline">Back to Books</Button>
             </Link>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow">
             <div className="space-y-2">
               <label htmlFor="title" className="block font-medium">
-                Course Title <span className="text-red-500">*</span>
+                Book Title <span className="text-red-500">*</span>
               </label>
               <input
                 id="title"
@@ -80,48 +81,64 @@ export default function AddCoursePage() {
                 value={formData.title}
                 onChange={handleChange}
                 className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter course title"
+                placeholder="enter title here"
               />
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="description" className="block font-medium">
-                Description <span className="text-red-500">*</span>
+              <label htmlFor="author" className="block font-medium">
+                Author <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="author"
+                name="author"
+                type="text"
+                required
+                value={formData.author}
+                onChange={handleChange}
+                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="enter author name here"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="rating" className="block font-medium">
+                Rating (from 1-10)
+              </label>
+              <input
+                id="rating"
+                name="rating"
+                type="number"
+                value={formData.rating}
+                onChange={handleChange}
+                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="enter a rating number from 1 - 10"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="comments" className="block font-medium">
+                Comments <span className="text-red-500">*</span>
               </label>
               <textarea
-                id="description"
-                name="description"
+                id="comments"
+                name="comments"
                 required
-                value={formData.description}
+                value={formData.comments}
                 onChange={handleChange}
                 rows={4}
                 className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter course description"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="estimatedTime" className="block font-medium">
-                Estimated Time (hours)
-              </label>
-              <input
-                id="estimatedTime"
-                name="estimatedTime"
-                type="number"
-                value={formData.estimatedTime}
-                onChange={handleChange}
-                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter number of hours"
+                placeholder="your thoughts and comments on the book"
               />
             </div>
 
             <div className="pt-4">
               <Button 
                 type="submit" 
-                className="w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
+                className="focus:outline-none text-white bg-stone-500 hover:bg-stone-600 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
                 disabled={loading}
               >
-                {loading ? "Adding Course..." : "Add Course"}
+                {loading ? "Adding book..." : "Add Book"}
               </Button>
             </div>
           </form>
