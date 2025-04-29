@@ -1,30 +1,8 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import clientPromise from "@/lib/mongodb";
 import { Book } from "@/types/book";
 
-//path to books.json file
-const dataFilePath = path.join(process.cwd(), "data", "books.json");
 
-// Helper function to read books from the JSON file
-const readBooks = (): Book[] => {
-    try {
-      const jsonData = fs.readFileSync(dataFilePath, "utf-8");
-      return JSON.parse(jsonData) as Book[];
-    } catch (error) {
-      console.error("Error reading books file:", error);
-      return [];
-    }
-  };
-
-// Helper function to write books to the JSON file
-const writeBooks = (books: Book[]) => {
-    try {
-      fs.writeFileSync(dataFilePath, JSON.stringify(books, null, 2), "utf-8");
-    } catch (error) {
-      console.error("Error writing to books file:", error);
-    }
-  };
 
 // GET: Retrieve book by ID
 export async function GET(
@@ -42,8 +20,9 @@ export async function GET(
         );
       }
   
-      const books = readBooks();
-      const book = books.find((b) => b.id === bookId);
+      const client = await clientPromise;
+      const db = client.db("booksDb");
+      const book = await db.collection("books").findOne({ id: bookId });
   
       if (!book) {
         return NextResponse.json({ error: "Book not found." }, { status: 404 });
@@ -75,18 +54,25 @@ export async function PUT(
       }
   
       const updatedBook: Partial<Book> = await request.json();
-      const books = readBooks();
-      const index = books.findIndex((b) => b.id === bookId);
+      const client = await clientPromise;
+      const db = client.db('booksDb');
   
-      if (index === -1) {
-        return NextResponse.json({ error: "Book not found." }, { status: 404 });
+      const book = await db.collection('books').findOneAndReplace(
+        { id: bookId },
+        {
+          id: updatedBook.id,
+          title: updatedBook.title,
+          author: updatedBook.author,
+          rating: updatedBook.rating,
+          comments: updatedBook.comments,
+        }
+      );
+  
+      if (!book) {
+        return NextResponse.json({ error: 'Book not found.'}, { status: 404});
       }
   
-      books[index] = { ...books[index], ...updatedBook, id: bookId };
-  
-      writeBooks(books);
-  
-      return NextResponse.json(books[index], { status: 200 });
+      return NextResponse.json(book, { status: 200 });
     } catch (error) {
       console.error("Error updating book:", error);
       return NextResponse.json(
@@ -111,16 +97,19 @@ export async function DELETE(
         );
       }
   
-      let books = readBooks();
+      const client = await clientPromise;
+      const db = client.db("booksDb");
+      let books = await db.collection('books').find({}).toArray();
+  
       const initialLength = books.length;
       books = books.filter((b) => b.id !== bookId);
-  
+
       if (books.length === initialLength) {
         return NextResponse.json({ error: "Book not found." }, { status: 404 });
       }
   
-      writeBooks(books);
-  
+      await db.collection ('books').findOneAndDelete({ id: bookId});
+
       return NextResponse.json(
         { message: `Book listing with ID ${bookId} deleted.` },
         { status: 200 }
