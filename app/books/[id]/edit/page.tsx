@@ -24,6 +24,7 @@ export default function EditBookPage({ params }: EditBookPageProps) {
   const [formData, setFormData] = useState<Partial<Book>>({
     title: "",
     author: "",
+    genre: "",
     rating: "",
     comments: ""
   });
@@ -166,6 +167,22 @@ export default function EditBookPage({ params }: EditBookPageProps) {
                 onChange={handleChange}
                 className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="enter author name here"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="genre" className="block font-medium">
+                Genre <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="genre"
+                name="genre"
+                type="text"
+                required
+                value={formData.genre || ""}
+                onChange={handleChange}
+                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="enter book genre here"
               />
             </div>
 

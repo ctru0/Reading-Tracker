@@ -63,6 +63,7 @@ export async function PUT(
           id: updatedBook.id,
           title: updatedBook.title,
           author: updatedBook.author,
+          genre: updatedBook.genre,
           rating: updatedBook.rating,
           comments: updatedBook.comments,
         }

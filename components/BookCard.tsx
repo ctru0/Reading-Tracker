@@ -15,6 +15,7 @@ export default function BookCard({ book }: BookCardProps) {
       </CardHeader>
       <CardContent className="flex-1">
         <p className="text-gray-700 font-bold">By {book.author}</p>
+        <p className="mt-4 text-gray-500">{book.genre}</p>
         <p className="mt-4 text-gray-600">Rating: {book.rating}</p>
         <p className="mt-4 text-gray-500">{book.comments}</p>
       </CardContent>

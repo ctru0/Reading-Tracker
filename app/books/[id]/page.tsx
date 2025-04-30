@@ -65,6 +65,9 @@ const BookPage: FC<BookPageProps> = async ({ params }) => {
               <h2 className="text-md font-semibold mb-2">Author:</h2>
               <p className="mb-4">{book.author}</p>
 
+              <h2 className="text-md font-semibold mb-2">Genre:</h2>
+              <p className="mb-4">{book.genre}</p>
+
               <h2 className="text-md font-semibold mb-2">Rating:</h2>
               <p className="mb-4">{book.rating}</p>
 
