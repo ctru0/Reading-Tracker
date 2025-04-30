@@ -47,7 +47,7 @@ const Home: FC = async () => {
           <div className="absolute top-1/2 left-1/2 -translate-1/2 text-gray-800 flex items-center justify-center w-full flex-col gap-2">
             <h1 className='text-5xl font-bold'>Sign in to view your books</h1>
             <SignInButton mode="modal">
-              <button className="mt-10 text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-xl px-6 py-4 text-center me-2 mb-2">
+              <button className="mt-6 px-8 py-3 rounded-full bg-blue-100 text-blue-800 text-2xl font-semibold hover:bg-blue-200 transition">
                 Sign In
               </button>
             </SignInButton>
@@ -59,7 +59,7 @@ const Home: FC = async () => {
         <div className="flex justify-between items-center mb-8">
           <h1 className="font-bold text-center">Reading Tracker: All Books</h1>
           <Link href="/books/add" className="text-3xl">
-            <Button className="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-lg px-5 py-2.5 text-center me-2 mb-2">
+            <Button className="px-10 py-7 rounded-full bg-blue-100 text-blue-800 text-large font-semibold hover:bg-blue-200 transition">
               + Add New Book
             </Button>
           </Link>

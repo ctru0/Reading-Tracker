@@ -14,7 +14,7 @@ export default async function Home() {
 				<p className='text-lg'>Add a new book listing, edit books, and delete</p>
 
 				<Link href="books" className='mt-4'>
-					<Button className="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-3xl px-5 py-7 text-center me-2 mb-2" >
+					<Button className="px-10 py-7 rounded-full bg-blue-100 text-blue-800 text-2xl font-semibold hover:bg-blue-200 transition" >
 					Open Reading Tracker
 					</Button>
 				</Link>
