@@ -6,6 +6,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+
 export default function AddBookPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -59,6 +61,19 @@ export default function AddBookPage() {
   return (
     <div className="bg-stone-300">
       <Header />
+
+      <SignedOut>
+          <div className="absolute top-1/2 left-1/2 -translate-1/2 text-gray-800 flex items-center justify-center w-full flex-col gap-2">
+            <h1 className='text-5xl font-bold'>Sign in to view your books</h1>
+            <SignInButton mode="modal">
+              <button className="mt-10 text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-xl px-6 py-4 text-center me-2 mb-2">
+                Sign In
+              </button>
+            </SignInButton>
+          </div>
+        </SignedOut>
+
+        <SignedIn>
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
           <div className="flex justify-between items-center mb-6">
@@ -144,6 +159,8 @@ export default function AddBookPage() {
           </form>
         </div>
       </main>
+      </SignedIn>
+      
     </div>
   );
 } 
